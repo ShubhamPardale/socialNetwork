@@ -12,16 +12,39 @@
 		
 			<div class="row justify-content-center mt-3">
 				<div class="col col-md-6 border-bottom">
-					<p><strong>@{{ post.author }}</strong> <i>{{ post.created_on }}</i>
+					<div>
+						<a href="{% url 'profile' post.author.profile.pk %}">
+							<img class="rounded-circle post-img" height="30" width="30" src="{{ post.author.profile.picture.url }}" >
+						</a>
+						<p class="post-text">
+							<a class="text-primary post-link" href="{% url 'profile' post.author.profile.pk %}">@{{ post.author }} </a><i>{{ post.created_on }}</i>
+						</p>
+					</div>
 					{% if request.user == post.author %}
 					<div style="float: right;">
-						  <a href="{% url 'post-edit' post.pk %}" style="color: black;"><i class="fa fa-pencil-square" aria-hidden="true"></i></a> 
-							<a href="{% url 'post-delete' post.pk %}" style="color: black;">
+						  <a href="{% url 'post-edit' post.pk %}" class="edit-color"><i class="fa fa-pencil-square" aria-hidden="true"></i></a> 
+							<a href="{% url 'post-delete' post.pk %}" class="edit-color">
 								<i class="fa fa-trash" aria-hidden="true"></i></a>
 					</div>
 					{% endif %}
 					</p>
 					<p>{{ post.body }}</p>
+					<div class="d-flex flex-row">
+						<form method="POST" action="{% url 'like' post.pk %}">
+							{% csrf_token %}
+							<input type="hidden" name="next" value="{{ request.path }}">
+							<button class="remove-default-btn" type="submit">
+								<i class="far fa-thumbs-up"><span>{{ post.likes.all.count }}</span></i>
+							</button>
+						</form>
+						<form method="POST" action="{% url 'dislike' post.pk %}">
+							{% csrf_token %}
+							<input type="hidden" name="next" value="{{ request.path }}">
+							<button class="remove-default-btn" type="submit">
+								<i class="far fa-thumbs-down"><span>{{ post.dislikes.all.count }}</span></i>
+							</button>
+						</form>
+					</div>
 				</div>
 			</div>
 		
@@ -39,12 +62,19 @@
 		{% for comment in comments %}
 		<div class="row justify-content-center mt-3">
 			<div class="col col-md-6 border-bottom mb-4 border-bottom">
-				<p><strong>{{ comment.author }} </strong> {{ comment.created_on }}</p>
-
+				<div>
+					<a href="{% url 'profile' comment.author.profile.pk %}">
+						<img class="rounded-circle post-img" height="30" width="30" src="{{ comment.author.profile.picture.url }}" >
+					</a>
+					<p class="post-text">
+						<a class="text-primary post-link" href="{% url 'profile' comment.author.profile.pk %}">@{{ comment.author }} </a><i>{{ comment.created_on }}</i>
+					</p>
+				</div>
+				
 					{% if request.user == comment.author %}
 					<div style="float: right;">
 
-						<a href="{% url 'comment-delete' post.pk comment.pk %}" style="color: black;">
+						<a href="{% url 'comment-delete' post.pk comment.pk %}" class="edit-color">
 								<i class="fa fa-trash" aria-hidden="true"></i></a>
 					</div>
 					{% endif %}

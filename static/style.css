@@ -1,0 +1,18 @@
+.remove-default-btn{
+    border: none; 
+    background-color:transparent; 
+    box-shadow:none;    
+}
+.edit-color{
+    color: black;
+}
+.post-link{
+    text-decoration: none;
+}
+.post-text{
+    padding-top: 0.5rem;
+}
+.post-img{
+    float: left;
+    margin-right: 1rem;
+}

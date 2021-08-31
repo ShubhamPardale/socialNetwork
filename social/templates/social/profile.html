@@ -15,7 +15,7 @@
 				<h3>{{ profile.name }}</h3>
 				<span>
 					{% if request.user == user %}
-						<a  href="{% url 'profile-edit' profile.pk %}" style="color: black;text-decoration: none;"><i class="far fa-edit" style="float: right;"></i></a>
+						<a  href="{% url 'profile-edit' profile.pk %}" class="edit-color post-link"><i class="far fa-edit" style="float: right;"></i></a>
 					{% endif %}
 				</span>
 					{% if profile.birth_date %}
@@ -29,6 +29,23 @@
 					{% if profile.bio %}
 						<p class="py-1 px-5">About : {{ profile.bio }}</p>
 					{% endif %}
+					<div class="mb-3">
+						<p>Followers:{{ number_of_followers }}</p>
+						{% if user == requset.user %}
+						{% else %}
+						{% if is_following %}
+						<form method="POST" action="{% url 'remove-follower' profile.pk %}">
+							{% csrf_token %}
+							<button class="btn btn-outline-danger" type="submit">Unfollow</button>
+						</form>
+						{% else %}
+						<form method="POST" action="{% url 'add-follower' profile.pk %}">
+							{% csrf_token %}
+							<button class="btn btn-outline-success" type="submit">Follow</button>
+						</form>
+						{% endif %}
+						{% endif %}
+					</div>
 				</div>
 			</div>
 <br>
@@ -37,11 +54,35 @@
 		{% for post in posts %}
 			<div class="row justify-content-center mt-3" >
 				<div class="col col-md-6 border-bottom position-relative" style="background-color: floralwhite;">
-					<p><strong>@{{ post.author }}</strong> <i>{{ post.created_on }}</i></p>
-					<p>{{ post.body }}</p>
-					<a href="{% url 'post-detail' post.pk %}" class="stretched-link"></a>
+					<div>
+						<a href="{% url 'profile' post.author.profile.pk %}">
+							<img class="rounded-circle post-img" height="30" width="30" src="{{ post.author.profile.picture.url }}" >
+						</a>
+						<p class="post-text">
+							<a class="text-primary post-link" href="{% url 'profile' post.author.profile.pk %}">@{{ post.author }} </a><i>{{ post.created_on }}</i>
+						</p>
+					</div>
+				    <div class="position-relative">
+					 <p>{{ post.body }}</p>
+					 <a href="{% url 'post-detail' post.pk %}" class="stretched-link"></a>
+				    </div>
+					<div class="d-flex flex-row">
+						<form method="POST" action="{% url 'like' post.pk %}">
+							{% csrf_token %}
+							<input type="hidden" name="next" value="{{ request.path }}">
+							<button class="remove-default-btn" type="submit">
+								<i class="far fa-thumbs-up"><span>{{ post.likes.all.count }}</span></i>
+							</button>
+						</form>
+						<form method="POST" action="{% url 'dislike' post.pk %}">
+							{% csrf_token %}
+							<input type="hidden" name="next" value="{{ request.path }}">
+							<button class="remove-default-btn" type="submit">
+								<i class="far fa-thumbs-down"><span>{{ post.dislikes.all.count }}</span></i>
+							</button>
+						</form>
+					</div>
 				</div>
-				
 			</div>
 			<br>
 		{% endfor %}

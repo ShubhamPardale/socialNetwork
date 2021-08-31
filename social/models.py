@@ -8,6 +8,8 @@ class Post(models.Model):
 	body = models.TextField()
 	created_on = models.DateTimeField(default=timezone.now)
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
+	likes = models.ManyToManyField(User,blank=True, related_name='likes')
+	dislikes = models.ManyToManyField(User,blank=True, related_name='dislikes')
 
 	def __str__(self):
 		return self.author, self.created_on
@@ -25,6 +27,8 @@ class UserProfile(models.Model):
 	birth_date = models.DateField(null=True, blank=True)
 	location = models.CharField(max_length=30, blank=True, null=True)
 	picture = models.ImageField(upload_to='uploads/profile_pictures', default='uploads/profile_pictures/default.png')
+	followers = models.ManyToManyField(User,blank=True, related_name='followers')
+	
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
